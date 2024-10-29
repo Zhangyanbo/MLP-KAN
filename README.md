@@ -1,5 +1,5 @@
-# FCN-KAN
-Kolmogorov–Arnold Networks with modified activation (using FCN + positional encoding to represent the activation). The code utilizes `torch.vmap` to accelerate and simplify the process.
+# MLP-KAN
+Kolmogorov–Arnold Networks with modified activation (using MLP + positional encoding to represent the activation). The code utilizes `torch.vmap` to accelerate and simplify the process.
 
 ## Experiment
 
