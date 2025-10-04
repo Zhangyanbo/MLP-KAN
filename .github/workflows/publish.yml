@@ -6,12 +6,13 @@ on:
       - 'v*'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
     env:
       PYPI_PROJECT_NAME: mlp-kan
     steps:
