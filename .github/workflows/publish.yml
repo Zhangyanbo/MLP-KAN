@@ -6,13 +6,12 @@ on:
       - 'v*'
   workflow_dispatch:
 
-permissions:
-  contents: read
-  id-token: write
-
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     env:
       PYPI_PROJECT_NAME: mlp-kan
     steps:
@@ -23,6 +22,15 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
+
+      - name: 检查 PyPI Token Secret
+        run: |
+          if [ -z "${PYPI_API_TOKEN}" ]; then
+            echo "PYPI_API_TOKEN GitHub Secret 未配置" >&2
+            exit 1
+          fi
+        env:
+          PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
 
       - name: Install build tools
         run: |
