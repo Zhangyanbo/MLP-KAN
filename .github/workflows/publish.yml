@@ -12,6 +12,8 @@ jobs:
     permissions:
       contents: read
       id-token: write
+    environment:
+      name: publish
     env:
       PYPI_PROJECT_NAME: mlp-kan
     steps:
