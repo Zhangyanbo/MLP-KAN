@@ -4,10 +4,8 @@ PyTorch layers for building Kolmogorov–Arnold Networks (KAN) with either learn
 
 ## Installation
 
-The project follows the PEP 517 `pyproject.toml` layout. Install the package in editable mode while developing:
-
 ```bash
-pip install -e .
+pip install mlp-kan
 ```
 
 A pre-existing PyTorch 2.0 (or later) environment is required.
