@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mlp-kan"
+version = "0.1.0"
+description = "Kolmogorov–Arnold Networks layers with MLP and interpolation activations."
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+  {name = "Yanbo Zhang"}
+]
+keywords = ["kolmogorov-arnold network", "neural networks", "torch", "representation learning"]
+dependencies = [
+  "torch>=2.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/yanbozhang/MLP-KAN"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+

@@ -1,100 +1,51 @@
 # MLP-KAN
-Kolmogorov–Arnold Networks with modified activation (using MLP + positional encoding to represent the activation). The code utilizes `torch.vmap` to accelerate and simplify the process.
 
-## Experiment
+PyTorch layers for building Kolmogorov–Arnold Networks (KAN) with either learnable sinusoidal features or an interpolation-based parameterisation. The implementation relies on `torch.vmap` for efficient evaluation and exposes utilities to encourage smoothness in interpolated activations.
 
-Running the following code for quick experiment:
+## Installation
+
+The project follows the PEP 517 `pyproject.toml` layout. Install the package in editable mode while developing:
 
 ```bash
-python experiment.py
+pip install -e .
 ```
 
-## Example usage
+A pre-existing PyTorch 2.0 (or later) environment is required.
+
+## Quickstart
 
 ```python
-from kan_layer import KANLayer
+import torch
+import torch.nn as nn
+from mlp_kan import KANLayer, KANInterpoLayer, smooth_penalty
 
+# Sinusoidal feature KAN layer stack
 model = nn.Sequential(
-        KANLayer(2, 5),
-        KANLayer(5, 1)
-    )
+    KANLayer(2, 5),
+    KANLayer(5, 1),
+)
 
 x = torch.randn(16, 2)
 y = model(x)
-# y.shape = (16, 1)
-```
+assert y.shape == (16, 1)
 
-## Visualization
-
-I experimented with a simple objective function:
-
-$$f(x,y)=\exp(\sin(\pi x) + y^2)$$
-
-```python
-def target_fn(input):
-    # f(x,y)=exp(sin(pi * x) + y^2)
-    if len(input.shape) == 1:
-        x, y = input
-    else:
-        x, y = input[:, 0], input[:, 1]
-    return torch.exp(torch.sin(torch.pi * x) + y**2)
-```
-
-The first experiment set the network as:
-
-```python
-dims = [2, 5, 1]
-model = nn.Sequential(
-    KANLayer(dims[0], dims[1]),
-    KANLayer(dims[1], dims[2])
+# Interpolation-based layer with optional smoothness penalty
+interp_model = nn.Sequential(
+    KANInterpoLayer(2, 5, num_x=128, x_min=-3, x_max=3),
+    KANInterpoLayer(5, 1, num_x=256),
 )
+penalty = smooth_penalty(interp_model)
 ```
 
-After training on this, the activation function did learn the $\sin(\pi x)$ and $x^2$ functions:
+## Experiments
 
-![](./images/layer_0.png)
+Two reference scripts illustrate training and visualisation workflows:
 
-The exponential function is also been learned for the second layer:
+- `experiment.py` trains a small model using sinusoidal features.
+- `experiment_interpolation.py` explores the interpolation-based variant with the smoothness regulariser.
 
-![](./images/layer_1.png)
+Run either script after installing the project in editable mode. Generated plots are saved to the `images`/`temp` folders referenced in the notebooks.
 
-For better interpretability, we can set the network as:
+## Visualisation
 
-```python
-dims = [2, 1, 1]
-model = nn.Sequential(
-    KANLayer(dims[0], dims[1]),
-    KANLayer(dims[1], dims[2])
-)
-```
-
-Both the first layer and the second layer learning exactly the target function:
-
-![](./images/layer_0_inter.png)
-
-Second layer learning the exponential function:
-
-![](./images/layer_1_inter.png)
-
-# Linear Interpolation Version
-
-```python
-from kan_layer import KANInterpoLayer
-
-model = nn.Sequential(
-        KANInterpoLayer(2, 5),
-        KANInterpoLayer(5, 1)
-    )
-
-x = torch.randn(16, 2)
-y = model(x)
-# y.shape = (16, 1)
-```
-
-The result shows similar performance. However, this version is harder to train. I guess it is because each parameter only affect the behavior locally, making it harder to cross local minima, or zero-gradient points. Adding `smooth_penalty` may help.
-
-![](./images/layer_0_interpolation.png)
-
-![](./images/layer_1_interpolation.png)
-
-![](./images/loss_interpolation.png)
+The repository includes example plots captured during the experiments, demonstrating how individual activations learn components of the target function.

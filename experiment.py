@@ -4,7 +4,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 
 import matplotlib.pyplot as plt
-from kan_layer import KANLayer
+from mlp_kan import KANLayer
 from tqdm import tqdm
 
 
